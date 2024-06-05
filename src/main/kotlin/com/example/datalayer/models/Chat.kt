@@ -10,5 +10,6 @@ data class Chat(
     var message: String,
     var time: String,
     var userName: String,
-
+    val address: Address = Address(city = "Nairobi", country = "kenya", street = "nagware"),
+    val addressList: List<Address> = listOf()
 )

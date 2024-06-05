@@ -1,5 +1,6 @@
 package com.example.domain.routes
 
+import com.example.datalayer.models.Chat
 import com.example.datalayer.models.Session
 import com.example.domain.room.MemberException
 import com.example.domain.room.RoomController
@@ -11,6 +12,7 @@ import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.serialization.json.Json
 
 fun Route.chatSocket(roomController: RoomController) {
     webSocket("/chat-socket") {
@@ -21,16 +23,18 @@ fun Route.chatSocket(roomController: RoomController) {
         }
         try {
             roomController.onJoin(
-                username = session.userName,
-                sessionId = session.sessionId,
-                socket = this
+                username = session.userName, sessionId = session.sessionId, socket = this
             )
+
             incoming.consumeEach { frame ->
                 if (frame is Frame.Text) {
-                    roomController.sendMessage(
-                        username = session.userName,
-                        message = frame.readText()
-                    )
+                    try {
+                        val chat = Json.decodeFromString<Chat>(frame.readText())
+                        roomController.sendMessage(chat)
+
+                    } catch (e: Exception) {
+                        println(e)
+                    }
                 }
             }
         } catch (e: MemberException) {
@@ -46,8 +50,7 @@ fun Route.chatSocket(roomController: RoomController) {
 fun Route.getAllMessages(roomController: RoomController) {
     get("/chats") {
         call.respond(
-            HttpStatusCode.OK,
-            roomController.getAllMessages()
+            HttpStatusCode.OK, roomController.getAllMessages()
         )
     }
 }

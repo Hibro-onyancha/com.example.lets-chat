@@ -28,16 +28,10 @@ class RoomController(
         )
     }
 
-    suspend fun sendMessage(username: String, message: String) {
+    suspend fun sendMessage(chat: Chat) {
         members.values.forEach { member ->
-            val messageEntity = Chat(
-                message = message,
-                userName = username,
-                time = System.currentTimeMillis().toString()
-            )
-            chatRepo.sendChat(messageEntity)
-
-            val parsedMessage = Json.encodeToString(messageEntity)
+            chatRepo.sendChat(chat)
+            val parsedMessage = Json.encodeToString(chat)
             member.webSocketSession.send(Frame.Text(parsedMessage))
         }
     }
