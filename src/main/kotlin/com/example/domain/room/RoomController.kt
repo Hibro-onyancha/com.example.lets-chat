@@ -46,4 +46,9 @@ class RoomController(
             members.remove(username)
         }
     }
+
+    suspend fun updateChat(id: String, chat: Chat) :Boolean{
+        return chatRepo.updateChat(id, chat)
+    }
+
 }

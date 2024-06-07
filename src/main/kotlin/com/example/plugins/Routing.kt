@@ -4,6 +4,7 @@ import com.example.domain.di.mainModule
 import com.example.domain.room.RoomController
 import com.example.domain.routes.chatSocket
 import com.example.domain.routes.getAllMessages
+import com.example.domain.routes.updateChat
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import org.koin.core.context.startKoin
@@ -17,5 +18,6 @@ fun Application.configureRouting() {
     install(Routing) {
         chatSocket(roomController)
         getAllMessages(roomController)
+        updateChat(roomController)
     }
 }
